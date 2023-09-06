@@ -9,13 +9,15 @@ from django.core.paginator import Paginator, PageNotAnInteger, EmptyPage
 from django.http import JsonResponse
 from ..models import Task, Report, Suite
 from ..base.task import ApiTask
-from  ..base.element import Element
+from ..base.element import Element
+from ..base.base_log import log
 
 
 def get_real_time_task_list(request):
     """
     实时任务列表
     """
+    log.info("发起了实时任务列表")
     data = request.GET
     query = data.get("query")  # 查询条件
     page_num = data.get("pagenum")  # 当前页码
@@ -61,6 +63,7 @@ def get_real_time_task_list(request):
             report = Report.objects.get(task_id=i.id)
             sum_pass = report.sum_pass
             sum_fail = report.sum_fail
+            log.error("获取用例数量统计，如果出现异常，可能是报告这里被删除")
         except:
             sum_pass = 0
             sum_fail = 0
@@ -85,16 +88,18 @@ def new_real_time_task(request):
 
     data = json.loads(request.body)
     name = data.get("name")
-    task_state = Element.TASK_STATE_DEFAULT # 默认未开始
-    task_type = Element.TASK_TYPE_REAL # 实时任务
+    task_state = Element.TASK_STATE_DEFAULT  # 默认未开始
+    task_type = Element.TASK_TYPE_REAL  # 实时任务
     suite_id = data.get("suite_id")
     start_time = datetime.now().strftime("%H-%M-%S")
     ta = Task(name=name + "实时任务" + start_time, task_type=task_type, task_state=task_state, suite_id=suite_id,
               start_time=start_time)
     ta.save()
     res = {'code': 1, 'msg': 'success'}
-    threading.Thread(target=ApiTask.background_task, args=(), kwargs={"suite_id": suite_id, "task": ta, "lg_session": res_session}).start()
+    threading.Thread(target=ApiTask.background_task, args=(),
+                     kwargs={"suite_id": suite_id, "task": ta, "lg_session": res_session}).start()
     # background_task(suite_id, ta)
+    log.info("这是实时任务日志")
     return JsonResponse(res)
 
 
