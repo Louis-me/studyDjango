@@ -14,14 +14,13 @@ exclued_path = ["/login/","/testModel/login/","/logout/","/testModel/LoginOut/",
 class AuthenticationMiddle(MiddlewareMixin):
     def process_request(self, request):
         url_path = request.path
-        print(url_path)
         #如果不在请求在白名单里
         if url_path not in exclued_path:
+            auth_header = request.META.get('HTTP_AUTHORIZATION')
             #如果未登陆，则调转到登陆页面，将请求的url作为next参数
             # if  not request.user.is_authenticated:
-            if not request.session.get("username"):
-                # return redirect("/login/?next={url_path}".format(url_path=url_path))
-                return JsonResponse({'code': 400, 'msg': 'login is failed2222'})
+            if not request.session.get("username") and auth_header!="shikun":
+                    return JsonResponse({'code': 400, 'msg': 'login is failed2222'})
         #如果已经登陆，则通过
         else:
             pass

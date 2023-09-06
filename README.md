@@ -1,5 +1,3 @@
 # 说明
-- 对django的练习，主要实现了多表查询
-- 结合vue3进行增删改查功能
-- 解决和vue3交互的跨域问题
-- 新增白名单的方式校验是否已经登录，登录记录用的session
+- 为[客户端](https://github.com/Louis-me/studyVue3) 的配套后台
+- 代码主要是基于这里[进行](https://github.com/Louis-me/vue_server_api)升级，新增白名单的方式校验是否已经登录，登录记录用的session
